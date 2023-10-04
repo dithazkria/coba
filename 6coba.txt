@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Percobaan Pengambilan Data</title>
+</head>
+<body>
+    <h2>Percobaan Pengambilan Data</h2>
+    <h3>Isi dengan URL yang anda punya!</h3>
+    <form id="form1">
+        <label for="input">Masukkan URL:</label>
+        <input type="text" id="input" name="input"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <div id="tableContainer" style="display: none;">
+        <table id="dataTable" border="1">
+        </table>
+    </div>
+
+    <script>
+        document.getElementById("form1").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            var urlInput = document.getElementById("input").value; 
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", urlInput, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+
+                    var dataTable = document.getElementById("dataTable");
+                    var tableContainer = document.getElementById("tableContainer");
+
+                    // Hapus konten tabel sebelumnya jika ada
+                    dataTable.innerHTML = '';
+
+                    // Buat header tabel
+                    var headerRow = document.createElement('tr');
+                    for (var key in data[0]) {
+                        if (data[0].hasOwnProperty(key)) {
+                            var headerCell = document.createElement('th');
+                            headerCell.textContent = key;
+                            headerRow.appendChild(headerCell);
+                        }
+                    }
+                    dataTable.appendChild(headerRow);
+
+                    // Tambahkan data ke tabel
+                    data.forEach(function (item) {
+                        var dataRow = document.createElement('tr');
+                        for (var key in item) {
+                            if (item.hasOwnProperty(key)) {
+                                var dataCell = document.createElement('td');
+                                dataCell.textContent = item[key];
+                                dataRow.appendChild(dataCell);
+                            }
+                        }
+                        dataTable.appendChild(dataRow);
+                    });
+
+                    // Tampilkan tabel
+                    tableContainer.style.display = 'block';
+                }
+            };
+
+            // Kirim permintaan GET ke URL yang diinputkan
+            xhr.send();
+        });
+    </script>
+</body>
+</html>
